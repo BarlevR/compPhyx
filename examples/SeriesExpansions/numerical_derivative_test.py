@@ -8,9 +8,9 @@ User provides a function and a value at which the derivative is calculated
 Author: Barlev Raymond
 """
 # Imports
-import src.logo as logo
+import compPhyx.logo as logo
 import numpy as np
-from src.calculus import nth_derivative
+from compPhyx.calculus import nth_derivative
 
 # Provide function
 def func(x):
