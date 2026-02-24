@@ -1,0 +1,1 @@
+from compPhyx.approx.taylorExpansion import TaylorSeries
