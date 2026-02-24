@@ -1,7 +1,9 @@
 """
 Computational Physics
 Directory: examples/SeriesExpansions
+
 Code: Taylor Expansion of a General function (using TaylorSeries class)
+
 Author: Barlev Raymond
 """
 
@@ -14,7 +16,7 @@ from compPhyx.approx.taylorExpansion import TaylorSeries
 
 
 def func(x):
-    # return 2*np.sin(x)**2 + x
+    #return 2*np.sin(x)**2 + x
     return 2 * np.sin(x) * np.cos(x / 2)
 
 
