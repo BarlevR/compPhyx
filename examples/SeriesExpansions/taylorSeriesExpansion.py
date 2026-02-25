@@ -9,6 +9,7 @@ Author: Barlev Raymond
 
 import numpy as np
 import matplotlib.pyplot as plt
+import compPhyx.logo as logo
 
 # Adjust this import to match your package name + file location
 # Example assumes: compPhyx/approx/taylor.py contains class TaylorSeries
@@ -45,4 +46,5 @@ def main():
 
 
 if __name__ == "__main__":
+    print(logo.art)
     main()
