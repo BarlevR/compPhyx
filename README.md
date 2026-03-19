@@ -39,7 +39,8 @@ compPhyx/
 │   ├── approx/        # Series expansions and approximations
 │   ├── calculus/      # Numerical differentiation and integration
 │   └── ...
-├── examples/          # Example scripts
+├── examples/          # Physics examples
+├── test/              # Test scripts for each compPhyx utility
 ├── pyproject.toml     # Package configuration
 └── README.md
 ```
