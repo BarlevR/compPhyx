@@ -1,6 +1,6 @@
 '''
 compPhyx
-Directory: tests/ode
+Directory: tests/timestepping
 
 Code: Compare ODE solvers against an analytical solution.
 
@@ -15,7 +15,7 @@ Author: Barlev Raymond
 
 import numpy as np
 import compPhyx.logo as logo
-from compPhyx.ode import Euler, RK4, RK45
+from compPhyx.timestepping import Euler, RK4, RK45
 
 def f(t, y):
     return -y

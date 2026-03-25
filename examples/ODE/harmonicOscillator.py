@@ -15,7 +15,7 @@ Author: Barlev Raymond
 import numpy as np
 import matplotlib.pyplot as plt
 import compPhyx.logo as logo
-from compPhyx.ode import EulerSecondOrder
+from compPhyx.timestepping import EulerSecondOrder
 
 print(logo.art)
 

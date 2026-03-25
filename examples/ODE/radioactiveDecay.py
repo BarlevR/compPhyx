@@ -12,7 +12,7 @@ Author: Barlev Raymond
 import numpy as np
 import matplotlib.pyplot as plt
 import compPhyx.logo as logo
-from compPhyx.ode import Euler, RK4, RK45
+from compPhyx.timestepping import Euler, RK4, RK45
 
 print(logo.art)
 
