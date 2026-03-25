@@ -15,6 +15,3 @@ venv/
 Thumbs.db
 
 *.egg-info/
-
-# Claude Code
-CLAUDE.md
