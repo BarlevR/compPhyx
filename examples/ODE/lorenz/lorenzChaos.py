@@ -6,8 +6,8 @@ Code: Lorenz system — sensitivity to initial conditions (chaos).
       Two trajectories with a small perturbation in x0 diverge exponentially.
 
 Solvers compared:
-    scipy.integrate.solve_ivp  (RK45)
-    compPhyx.timestepping.RK45
+    scipy.integrate.solve_ivp  (RK45)  — reference
+    compPhyx.timestepping.solve_ode    — METHOD selectable below
 
 Author: Barlev Raymond
 '''
@@ -17,28 +17,31 @@ import matplotlib.pyplot as plt
 from scipy import integrate
 import compPhyx.logo as logo
 from compPhyx.applications import LorenzSystem
-from compPhyx.timestepping import RK45
+from compPhyx.timestepping import solve_ode
 
 print(logo.art)
+
+# --- Pick compPhyx solver: 'Euler', 'RK4', 'RK45' ---
+METHOD = 'RK45'
 
 # --- Problem setup ---
 problem  = LorenzSystem(a=10.0, b=50.0, c=8.0/3.0, r0=[1.0, 0.0, 0.0])
 problem2 = LorenzSystem(a=10.0, b=50.0, c=8.0/3.0, r0=[1.1, 0.0, 0.0])
 
 tStart, tEnd = 0.0, 50.0
+t_eval = np.linspace(tStart, tEnd, 5001)
 
-# --- scipy solve ---
-t_eval     = np.linspace(tStart, tEnd, 5001)
+# --- scipy solve (reference) ---
 sol1_scipy = integrate.solve_ivp(problem.f,  [tStart, tEnd], problem.r0,
                                  method='RK45', t_eval=t_eval)
 sol2_scipy = integrate.solve_ivp(problem2.f, [tStart, tEnd], problem2.r0,
                                  method='RK45', t_eval=t_eval)
 
 # --- compPhyx solve ---
-nmax    = 5000
-h       = (tEnd - tStart) / nmax
-sol1_cp = RK45(problem.f,  t0=tStart, y0=problem.r0,  nmax=nmax, h=h).solve()
-sol2_cp = RK45(problem2.f, t0=tStart, y0=problem2.r0, nmax=nmax, h=h).solve()
+sol1_cp = solve_ode(problem.f,  [tStart, tEnd], problem.r0,
+                    method=METHOD, t_eval=t_eval)
+sol2_cp = solve_ode(problem2.f, [tStart, tEnd], problem2.r0,
+                    method=METHOD, t_eval=t_eval)
 
 # --- Plot: 3D attractor — both trajectories, both solvers ---
 fig = plt.figure(figsize=(14, 6))
@@ -52,10 +55,10 @@ ax1.plot3D(sol2_scipy.y[0], sol2_scipy.y[1], sol2_scipy.y[2], 'r', lw=0.5, label
 ax1.legend()
 
 ax2 = fig.add_subplot(1, 2, 2, projection='3d')
-ax2.set_title('compPhyx RK45')
+ax2.set_title(f'compPhyx {METHOD}')
 ax2.set_xlabel('x'); ax2.set_ylabel('y'); ax2.set_zlabel('z')
-ax2.plot3D(sol1_cp[1], sol1_cp[2], sol1_cp[3], 'b', lw=0.5, label='r0')
-ax2.plot3D(sol2_cp[1], sol2_cp[2], sol2_cp[3], 'r', lw=0.5, label='r0 + δ')
+ax2.plot3D(sol1_cp.y[0], sol1_cp.y[1], sol1_cp.y[2], 'b', lw=0.5, label='r0')
+ax2.plot3D(sol2_cp.y[0], sol2_cp.y[1], sol2_cp.y[2], 'r', lw=0.5, label='r0 + δ')
 ax2.legend()
 
 plt.tight_layout()
@@ -67,16 +70,16 @@ axes[0].set_title('x(t) — two trajectories')
 axes[0].set_ylabel('x(t)')
 axes[0].plot(sol1_scipy.t, sol1_scipy.y[0], 'b-',  lw=0.8, label='scipy  r0')
 axes[0].plot(sol1_scipy.t, sol2_scipy.y[0], 'r-',  lw=0.8, label='scipy  r0+δ')
-axes[0].plot(sol1_cp[0],   sol1_cp[1],      'b--', lw=0.8, label='compPhyx  r0')
-axes[0].plot(sol1_cp[0],   sol2_cp[1],      'r--', lw=0.8, label='compPhyx  r0+δ')
+axes[0].plot(sol1_cp.t,    sol1_cp.y[0],    'b--', lw=0.8, label=f'compPhyx {METHOD}  r0')
+axes[0].plot(sol1_cp.t,    sol2_cp.y[0],    'r--', lw=0.8, label=f'compPhyx {METHOD}  r0+δ')
 axes[0].legend(fontsize=8)
 
 axes[1].set_title('|x1(t) − x2(t)| — divergence of nearby trajectories')
 axes[1].set_xlabel('t'); axes[1].set_ylabel('|Δx(t)|')
 axes[1].semilogy(sol1_scipy.t, np.abs(sol1_scipy.y[0] - sol2_scipy.y[0]),
                  'b-',  lw=0.8, label='scipy RK45')
-axes[1].semilogy(sol1_cp[0],   np.abs(sol1_cp[1] - sol2_cp[1]),
-                 'r--', lw=0.8, label='compPhyx RK45')
+axes[1].semilogy(sol1_cp.t,    np.abs(sol1_cp.y[0] - sol2_cp.y[0]),
+                 'r--', lw=0.8, label=f'compPhyx {METHOD}')
 axes[1].legend()
 
 plt.tight_layout()
