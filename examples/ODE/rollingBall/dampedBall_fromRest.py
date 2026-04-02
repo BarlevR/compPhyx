@@ -23,12 +23,24 @@ print(logo.art)
 # --- Pick compPhyx solver: 'Euler', 'RK4', 'RK45' ---
 METHOD = 'RK45'
 
-# --- Problem setup ---
-problem = RollingBall(m=1.0, U0=1.0, xi=0.1,
-                      r0=[1.0, -0.5, 0.0, 0.0])
+# --- Physical parameters ---
+mass      = 1.0   # mass
+curvature = 1.0   # bowl curvature  (potential U = curvature*(x^2 + y^2))
+damping   = 0.1   # damping coefficient
 
-tStart, tEnd = 0.0, 100.0
-t_eval = np.linspace(tStart, tEnd, 1001)
+# --- Initial conditions ---
+x0  =  1.0  # initial x position
+y0  = -0.5  # initial y position
+vx0 =  0.0  # initial x velocity
+vy0 =  0.0  # initial y velocity  (released from rest)
+
+# --- Time span ---
+tStart = 0.0
+tEnd   = 100.0
+
+# --- Problem setup ---
+problem = RollingBall(m=mass, U0=curvature, xi=damping, r0=[x0, y0, vx0, vy0])
+t_eval  = np.linspace(tStart, tEnd, 1001)
 
 # --- scipy solve (reference) ---
 sol_scipy = integrate.solve_ivp(problem.f, [tStart, tEnd], problem.r0,

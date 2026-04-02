@@ -24,12 +24,23 @@ print(logo.art)
 # --- Pick compPhyx solver: 'Euler', 'RK4', 'RK45' ---
 METHOD = 'RK45'
 
-# --- Problem setup ---
-problem = LorenzSystem(a=10.0, b=50.0, c=8.0/3.0,
-                       r0=[1.0, 0.0, 0.0])
+# --- Physical parameters ---
+a = 10.0        # Prandtl number
+b = 50.0        # Rayleigh number  (b > 24.74 → chaotic)
+c = 8.0 / 3.0  # geometric factor
 
-tStart, tEnd = 0.0, 50.0
-t_eval = np.linspace(tStart, tEnd, 5001)
+# --- Initial conditions ---
+x0 = 1.0   # initial x
+y0 = 0.0   # initial y
+z0 = 0.0   # initial z
+
+# --- Time span ---
+tStart = 0.0
+tEnd   = 50.0
+
+# --- Problem setup ---
+problem = LorenzSystem(a=a, b=b, c=c, r0=[x0, y0, z0])
+t_eval  = np.linspace(tStart, tEnd, 5001)
 
 # --- scipy solve (reference) ---
 sol_scipy = integrate.solve_ivp(problem.f, [tStart, tEnd], problem.r0,
@@ -41,8 +52,7 @@ sol_cp = solve_ode(problem.f, [tStart, tEnd], problem.r0,
 
 # --- Plot: 3D attractor ---
 fig = plt.figure(figsize=(14, 6))
-fig.suptitle('Lorenz attractor  (a={}, b={}, c={:.3f})'.format(
-    problem.a, problem.b, problem.c))
+fig.suptitle(f'Lorenz attractor  (a={a}, b={b}, c={c:.3f})')
 
 ax1 = fig.add_subplot(1, 2, 1, projection='3d')
 ax1.set_title('scipy RK45')
