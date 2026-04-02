@@ -12,9 +12,10 @@ the Lorenz butterfly (strange attractor).
 '''
 
 import numpy as np
+from ._base import Application
 
 
-class LorenzSystem:
+class LorenzSystem(Application):
     '''
     Parameters
     ----------

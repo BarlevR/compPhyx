@@ -1,9 +1,7 @@
 '''
-compPhyx
-Subpackage: ode
-Module: euler
+compPhyx.timestepping.euler
 
-Euler ODE solvers as classes.
+Euler ODE solvers.
 
   Euler             — first-order ODE:  dy/dt = f(t, y)
   EulerSecondOrder  — second-order ODE: y'' = f(t, y, y')
@@ -12,9 +10,10 @@ Euler ODE solvers as classes.
 '''
 
 import numpy as np
+from ._base import _ODESolver
 
 
-class Euler:
+class Euler(_ODESolver):
     '''
     Euler method for a first-order ODE: dy/dt = f(t, y)
 
@@ -27,36 +26,17 @@ class Euler:
     h     : float, step size
     '''
 
-    def __init__(self, f, t0, y0, nmax, h):
-        self.f    = f
-        self.t0   = float(t0)
-        self.y0   = np.asarray(y0, dtype=float)
-        self.nmax = int(nmax)
-        self.h    = float(h)
-
     def solve(self):
-        '''
-        Returns
-        -------
-        np.ndarray, shape (d+1, nmax+1) — row 0 is t, rows 1..d are state components.
-        For scalar y0, d=1 and shape is (2, nmax+1), matching the previous interface.
-        '''
         t = self.t0
         y = self.y0
-        t_values = [t]
-        y_values = [y]
+        t_list = [t]
+        y_list = [y]
         for _ in range(self.nmax):
             y = y + self.f(t, y) * self.h
             t = t + self.h
-            t_values.append(t)
-            y_values.append(y)
-        t_arr = np.array(t_values)
-        y_arr = np.array(y_values)
-        if y_arr.ndim == 1:
-            y_arr = y_arr[np.newaxis]   # (1, nmax+1)
-        else:
-            y_arr = y_arr.T             # (d, nmax+1)
-        return np.vstack([t_arr[np.newaxis], y_arr])
+            t_list.append(t)
+            y_list.append(y)
+        return self._pack_result(t_list, y_list)
 
 
 class EulerSecondOrder:
@@ -95,14 +75,14 @@ class EulerSecondOrder:
         t  = self.t0
         y  = self.y0
         dy = self.dy0
-        t_values  = [t]
-        y_values  = [y]
-        dy_values = [dy]
+        t_list  = [t]
+        y_list  = [y]
+        dy_list = [dy]
         for _ in range(self.nmax):
             y  = y + dy * self.h                      # position first (Euler-Cromer)
             dy = dy + self.f(t, y, dy) * self.h       # velocity uses new position
             t  = t + self.h
-            t_values.append(t)
-            y_values.append(y)
-            dy_values.append(dy)
-        return np.array([t_values, y_values, dy_values])
+            t_list.append(t)
+            y_list.append(y)
+            dy_list.append(dy)
+        return np.array([t_list, y_list, dy_list])

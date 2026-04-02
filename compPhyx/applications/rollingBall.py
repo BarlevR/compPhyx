@@ -15,9 +15,10 @@ Set A0=0 (default) for the unforced case.
 '''
 
 import numpy as np
+from ._base import Application
 
 
-class RollingBall:
+class RollingBall(Application):
     '''
     Parameters
     ----------

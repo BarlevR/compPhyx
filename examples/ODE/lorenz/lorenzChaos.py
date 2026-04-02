@@ -7,7 +7,7 @@ Code: Lorenz system — sensitivity to initial conditions (chaos).
 
 Solvers compared:
     scipy.integrate.solve_ivp  (RK45)  — reference
-    compPhyx.timestepping.solve_ode    — METHOD selectable below
+    compPhyx.applications.LorenzSystem — METHOD selectable below
 
 Author: Barlev Raymond
 '''
@@ -17,7 +17,6 @@ import matplotlib.pyplot as plt
 from scipy import integrate
 import compPhyx.logo as logo
 from compPhyx.applications import LorenzSystem
-from compPhyx.timestepping import solve_ode
 
 print(logo.art)
 
@@ -51,10 +50,8 @@ sol2_scipy = integrate.solve_ivp(problem2.f, [tStart, tEnd], problem2.r0,
                                  method='RK45', t_eval=t_eval)
 
 # --- compPhyx solve ---
-sol1_cp = solve_ode(problem.f,  [tStart, tEnd], problem.r0,
-                    method=METHOD, t_eval=t_eval)
-sol2_cp = solve_ode(problem2.f, [tStart, tEnd], problem2.r0,
-                    method=METHOD, t_eval=t_eval)
+sol1_cp = problem.solve(method=METHOD,  t_span=[tStart, tEnd], t_eval=t_eval)
+sol2_cp = problem2.solve(method=METHOD, t_span=[tStart, tEnd], t_eval=t_eval)
 
 # --- Plot: 3D attractor — both trajectories, both solvers ---
 fig = plt.figure(figsize=(14, 6))

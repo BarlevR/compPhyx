@@ -7,7 +7,7 @@ Code: The Lorenz attractor — chaotic strange attractor.
 
 Solvers compared:
     scipy.integrate.solve_ivp  (RK45)  — reference
-    compPhyx.timestepping.solve_ode    — METHOD selectable below
+    compPhyx.applications.LorenzSystem — METHOD selectable below
 
 Author: Barlev Raymond
 '''
@@ -17,7 +17,6 @@ import matplotlib.pyplot as plt
 from scipy import integrate
 import compPhyx.logo as logo
 from compPhyx.applications import LorenzSystem
-from compPhyx.timestepping import solve_ode
 
 print(logo.art)
 
@@ -47,8 +46,7 @@ sol_scipy = integrate.solve_ivp(problem.f, [tStart, tEnd], problem.r0,
                                 method='RK45', t_eval=t_eval)
 
 # --- compPhyx solve ---
-sol_cp = solve_ode(problem.f, [tStart, tEnd], problem.r0,
-                   method=METHOD, t_eval=t_eval)
+sol_cp = problem.solve(method=METHOD, t_span=[tStart, tEnd], t_eval=t_eval)
 
 # --- Plot: 3D attractor ---
 fig = plt.figure(figsize=(14, 6))

@@ -1,18 +1,16 @@
 '''
-compPhyx
-Subpackage: ode
-Module: rungeKutta
+compPhyx.timestepping.rungeKutta
 
-Runge-Kutta ODE solvers as classes.
+Runge-Kutta ODE solvers.
 
   RK4   — classical 4th-order Runge-Kutta
   RK45  — Runge-Kutta-Fehlberg 5th-order method
 '''
 
-import numpy as np
+from ._base import _ODESolver
 
 
-class RK4:
+class RK4(_ODESolver):
     '''
     Classical 4th-order Runge-Kutta method for dy/dt = f(t, y)
 
@@ -25,24 +23,11 @@ class RK4:
     h     : float, step size
     '''
 
-    def __init__(self, f, t0, y0, nmax, h):
-        self.f    = f
-        self.t0   = float(t0)
-        self.y0   = np.asarray(y0, dtype=float)
-        self.nmax = int(nmax)
-        self.h    = float(h)
-
     def solve(self):
-        '''
-        Returns
-        -------
-        np.ndarray, shape (d+1, nmax+1) — row 0 is t, rows 1..d are state components.
-        For scalar y0, d=1 and shape is (2, nmax+1), matching the previous interface.
-        '''
         t = self.t0
         y = self.y0
-        t_values = [t]
-        y_values = [y]
+        t_list = [t]
+        y_list = [y]
         for _ in range(self.nmax):
             k1 = self.h * self.f(t, y)
             k2 = self.h * self.f(t + self.h/2, y + k1/2)
@@ -50,18 +35,12 @@ class RK4:
             k4 = self.h * self.f(t + self.h,   y + k3)
             y  = y + (k1 + 2*k2 + 2*k3 + k4) / 6
             t  = t + self.h
-            t_values.append(t)
-            y_values.append(y)
-        t_arr = np.array(t_values)
-        y_arr = np.array(y_values)
-        if y_arr.ndim == 1:
-            y_arr = y_arr[np.newaxis]   # (1, nmax+1)
-        else:
-            y_arr = y_arr.T             # (d, nmax+1)
-        return np.vstack([t_arr[np.newaxis], y_arr])
+            t_list.append(t)
+            y_list.append(y)
+        return self._pack_result(t_list, y_list)
 
 
-class RK45:
+class RK45(_ODESolver):
     '''
     Runge-Kutta-Fehlberg (RK45) method for dy/dt = f(t, y).
     Uses the 5th-order (Fehlberg) update coefficients.
@@ -75,24 +54,11 @@ class RK45:
     h     : float, step size
     '''
 
-    def __init__(self, f, t0, y0, nmax, h):
-        self.f    = f
-        self.t0   = float(t0)
-        self.y0   = np.asarray(y0, dtype=float)
-        self.nmax = int(nmax)
-        self.h    = float(h)
-
     def solve(self):
-        '''
-        Returns
-        -------
-        np.ndarray, shape (d+1, nmax+1) — row 0 is t, rows 1..d are state components.
-        For scalar y0, d=1 and shape is (2, nmax+1), matching the previous interface.
-        '''
         t = self.t0
         y = self.y0
-        t_values = [t]
-        y_values = [y]
+        t_list = [t]
+        y_list = [y]
         for _ in range(self.nmax):
             k1 = self.h * self.f(t, y)
             k2 = self.h * self.f(t + self.h/4,      y + k1/4)
@@ -102,12 +68,6 @@ class RK45:
             k6 = self.h * self.f(t + self.h/2,       y - 8*k1/27      + 2*k2         - 3544*k3/2565 + 1859*k4/4104 - 11*k5/40)
             y  = y + 16*k1/135 + 6656*k3/12825 + 28561*k4/56430 - 9*k5/50 + 2*k6/55
             t  = t + self.h
-            t_values.append(t)
-            y_values.append(y)
-        t_arr = np.array(t_values)
-        y_arr = np.array(y_values)
-        if y_arr.ndim == 1:
-            y_arr = y_arr[np.newaxis]   # (1, nmax+1)
-        else:
-            y_arr = y_arr.T             # (d, nmax+1)
-        return np.vstack([t_arr[np.newaxis], y_arr])
+            t_list.append(t)
+            y_list.append(y)
+        return self._pack_result(t_list, y_list)
