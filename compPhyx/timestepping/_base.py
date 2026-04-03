@@ -4,6 +4,8 @@ compPhyx.timestepping._base
 Abstract base class for fixed-step ODE solvers.
 All solvers share the same __init__ and result-packing logic.
 Subclasses implement only the stepping logic in solve().
+
+Author: Barlev Raymond
 '''
 
 from abc import ABC, abstractmethod

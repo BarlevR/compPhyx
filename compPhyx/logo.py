@@ -1,3 +1,9 @@
+'''
+compPhyx ASCII art logo.
+
+Author: Barlev Raymond
+'''
+
 art = r"""
    ______                         ____  __              
   / ____/___  ____ ___  ____     / __ \/ /_  __  ___  __

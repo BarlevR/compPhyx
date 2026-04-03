@@ -7,6 +7,8 @@ Euler ODE solvers.
   EulerSecondOrder  — second-order ODE: y'' = f(t, y, y')
                       Uses the Euler-Cromer (symplectic) update so that
                       oscillatory solutions conserve energy.
+
+Author: Barlev Raymond
 '''
 
 import numpy as np

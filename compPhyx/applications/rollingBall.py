@@ -12,6 +12,8 @@ optionally driven by a periodic external force.
 
 Reduced to a 4D first-order system via state vector r = [x, y, vx, vy].
 Set A0=0 (default) for the unforced case.
+
+Author: Barlev Raymond
 '''
 
 import numpy as np

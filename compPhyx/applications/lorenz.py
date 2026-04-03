@@ -9,6 +9,8 @@ The Lorenz system — a chaotic strange attractor.
 
 For b > 24.74 the system is chaotic and trajectories converge to
 the Lorenz butterfly (strange attractor).
+
+Author: Barlev Raymond
 '''
 
 import numpy as np
