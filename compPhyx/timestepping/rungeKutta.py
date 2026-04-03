@@ -3,11 +3,72 @@ compPhyx.timestepping.rungeKutta
 
 Runge-Kutta ODE solvers.
 
+  RK2   — 2nd-order Runge-Kutta (midpoint method)
+  RK3   — 3rd-order Runge-Kutta (Kutta's method)
   RK4   — classical 4th-order Runge-Kutta
   RK45  — Runge-Kutta-Fehlberg 5th-order method
+
+Author: Barlev Raymond
 '''
 
 from ._base import _ODESolver
+
+
+class RK2(_ODESolver):
+    '''
+    2nd-order Runge-Kutta (midpoint method) for dy/dt = f(t, y)
+
+    Parameters
+    ----------
+    f     : callable, f(t, y) — the ODE right-hand side
+    t0    : float, initial time
+    y0    : scalar or array_like, initial value of y
+    nmax  : int, number of steps
+    h     : float, step size
+    '''
+
+    def solve(self):
+        t = self.t0
+        y = self.y0
+        t_list = [t]
+        y_list = [y]
+        for _ in range(self.nmax):
+            k1 = self.h * self.f(t,            y)
+            k2 = self.h * self.f(t + self.h/2, y + k1/2)
+            y  = y + k2
+            t  = t + self.h
+            t_list.append(t)
+            y_list.append(y)
+        return self._pack_result(t_list, y_list)
+
+
+class RK3(_ODESolver):
+    '''
+    3rd-order Runge-Kutta (Kutta's method) for dy/dt = f(t, y)
+
+    Parameters
+    ----------
+    f     : callable, f(t, y) — the ODE right-hand side
+    t0    : float, initial time
+    y0    : scalar or array_like, initial value of y
+    nmax  : int, number of steps
+    h     : float, step size
+    '''
+
+    def solve(self):
+        t = self.t0
+        y = self.y0
+        t_list = [t]
+        y_list = [y]
+        for _ in range(self.nmax):
+            k1 = self.h * self.f(t,            y)
+            k2 = self.h * self.f(t + self.h/2, y + k1/2)
+            k3 = self.h * self.f(t + self.h,   y - k1 + 2*k2)
+            y  = y + (k1 + 4*k2 + k3) / 6
+            t  = t + self.h
+            t_list.append(t)
+            y_list.append(y)
+        return self._pack_result(t_list, y_list)
 
 
 class RK4(_ODESolver):
