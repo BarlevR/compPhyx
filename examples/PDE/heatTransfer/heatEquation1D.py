@@ -1,6 +1,6 @@
 '''
 compPhyx
-Directory: examples/ODE/heatTransfer
+Directory: examples/PDE/heatTransfer
 
 Code: 1D heat equation via the Method of Lines.
 
@@ -33,6 +33,9 @@ print(logo.art)
 # --- Pick compPhyx solver: 'Euler', 'RK2', 'RK3', 'RK4', 'RK45' ---
 METHOD = 'RK45'
 
+# --- Pick spatial scheme: 'CentralD2' (2nd-order) or 'RichardsonD2' (4th-order) ---
+SPATIAL_SCHEME = 'CentralD2'
+
 # --- Physical parameters ---
 thermal_diffusivity = 1.0   # thermal diffusivity (a)
 dx                  = 1.0   # spatial step size
@@ -55,6 +58,7 @@ problem = HeatEquation1D(
     n_points=n_points,
     bc_left=bc_left,
     bc_right=bc_right,
+    spatial_scheme=SPATIAL_SCHEME,
 )
 
 t_eval = np.linspace(tStart, tEnd, 10001)
@@ -71,12 +75,12 @@ mid = n_points // 2
 
 fig, axes = plt.subplots(1, 2, figsize=(12, 4))
 fig.suptitle(f'1D Heat Equation  (a={thermal_diffusivity}, dx={dx}, '
-             f'BC: left={bc_left}, right={bc_right})')
+             f'BC: left={bc_left}, right={bc_right}, spatial: {SPATIAL_SCHEME})')
 
 axes[0].set_xlabel('Time t')
 axes[0].set_ylabel(f'Temperature at grid point {mid}')
 axes[0].plot(sol_scipy.t, sol_scipy.y[mid], 'b-',  lw=0.8, label='scipy RK45')
-axes[0].plot(sol_cp.t,    sol_cp.y[mid],    'r--', lw=1.2, label=f'compPhyx {METHOD}')
+axes[0].plot(sol_cp.t,    sol_cp.y[mid],    'r--', lw=1.2, label=f'compPhyx {METHOD}+{SPATIAL_SCHEME}')
 axes[0].legend()
 
 # --- Plot: steady-state temperature profile ---
@@ -84,7 +88,7 @@ axes[1].set_xlabel('Grid point')
 axes[1].set_ylabel('Temperature')
 axes[1].set_title('Temperature profile at t = tEnd')
 axes[1].plot(sol_scipy.y[:, -1], 'b-',  label='scipy RK45')
-axes[1].plot(sol_cp.y[:, -1],    'r--', label=f'compPhyx {METHOD}')
+axes[1].plot(sol_cp.y[:, -1],    'r--', label=f'compPhyx {METHOD}+{SPATIAL_SCHEME}')
 axes[1].legend()
 
 plt.tight_layout()
@@ -102,7 +106,7 @@ plt.colorbar(cf1, ax=axes2[0], label='Temperature')
 
 cf2 = axes2[1].contourf(x_grid, t_grid, sol_cp.y.T, levels=50, cmap='hot')
 axes2[1].set_xlabel('Grid point'); axes2[1].set_ylabel('Time t')
-axes2[1].set_title(f'compPhyx {METHOD}')
+axes2[1].set_title(f'compPhyx {METHOD}+{SPATIAL_SCHEME}')
 plt.colorbar(cf2, ax=axes2[1], label='Temperature')
 
 plt.tight_layout()

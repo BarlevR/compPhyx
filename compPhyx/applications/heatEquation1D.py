@@ -20,7 +20,12 @@ Author: Barlev Raymond
 
 import numpy as np
 from ._base import Application
-from compPhyx.calculus.schemes import CentralD2
+from compPhyx.calculus.schemes import CentralD2, RichardsonD2
+
+_SPATIAL_SCHEMES = {
+    'CentralD2':    CentralD2,
+    'RichardsonD2': RichardsonD2,
+}
 
 
 class HeatEquation1D(Application):
@@ -35,10 +40,13 @@ class HeatEquation1D(Application):
     u0                  : array_like or None
                           Initial temperature profile. If None, defaults
                           to zeros with boundary conditions applied.
+    spatial_scheme      : str, spatial second-derivative scheme.
+                          One of 'CentralD2' (2nd-order) or 'RichardsonD2' (4th-order).
     '''
 
     def __init__(self, thermal_diffusivity=1.0, dx=1.0, n_points=100,
-                 bc_left=0.0, bc_right=0.0, u0=None):
+                 bc_left=0.0, bc_right=0.0, u0=None,
+                 spatial_scheme='CentralD2'):
         self.a  = thermal_diffusivity
         self.dx = dx
         self.n  = n_points
@@ -52,9 +60,18 @@ class HeatEquation1D(Application):
         self.r0[0]  = bc_left
         self.r0[-1] = bc_right
 
+        # Spatial scheme validation
+        if spatial_scheme not in _SPATIAL_SCHEMES:
+            available = ', '.join(_SPATIAL_SCHEMES.keys())
+            raise ValueError(
+                f"Unknown spatial_scheme '{spatial_scheme}'. "
+                f"Available schemes are: {available}."
+            )
+
         # Spatial grid and second-derivative scheme
         self._x_grid = np.arange(n_points, dtype=float) * dx
-        self._d2     = CentralD2(h=dx)
+        self._d2     = _SPATIAL_SCHEMES[spatial_scheme](h=dx)
+        self.spatial_scheme = spatial_scheme
 
     def f(self, t, u):
         '''Finite difference Laplacian — ODE right-hand side.'''
