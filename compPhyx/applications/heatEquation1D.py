@@ -20,11 +20,11 @@ Author: Barlev Raymond
 
 import numpy as np
 from ._base import Application
-from compPhyx.calculus.schemes import CentralD2, RichardsonD2
+from compPhyx.calculus.schemes import CentralLaplacian, RichardsonLaplacian
 
 _SPATIAL_SCHEMES = {
-    'CentralD2':    CentralD2,
-    'RichardsonD2': RichardsonD2,
+    'CentralLaplacian':    CentralLaplacian,
+    'RichardsonLaplacian': RichardsonLaplacian,
 }
 
 
@@ -40,13 +40,13 @@ class HeatEquation1D(Application):
     u0                  : array_like or None
                           Initial temperature profile. If None, defaults
                           to zeros with boundary conditions applied.
-    spatial_scheme      : str, spatial second-derivative scheme.
-                          One of 'CentralD2' (2nd-order) or 'RichardsonD2' (4th-order).
+    spatial_scheme      : str, spatial Laplacian scheme.
+                          One of 'CentralLaplacian' (2nd-order) or 'RichardsonLaplacian' (4th-order).
     '''
 
     def __init__(self, thermal_diffusivity=1.0, dx=1.0, n_points=100,
                  bc_left=0.0, bc_right=0.0, u0=None,
-                 spatial_scheme='CentralD2'):
+                 spatial_scheme='CentralLaplacian'):
         self.a  = thermal_diffusivity
         self.dx = dx
         self.n  = n_points
@@ -68,14 +68,12 @@ class HeatEquation1D(Application):
                 f"Available schemes are: {available}."
             )
 
-        # Spatial grid and second-derivative scheme
-        self._x_grid = np.arange(n_points, dtype=float) * dx
-        self._d2     = _SPATIAL_SCHEMES[spatial_scheme](h=dx)
+        self._laplacian = _SPATIAL_SCHEMES[spatial_scheme](dx=dx)
         self.spatial_scheme = spatial_scheme
 
     def f(self, t, u):
         '''Finite difference Laplacian — ODE right-hand side.'''
-        d2u = self._d2.differentiate(self._x_grid, u)
+        d2u = self._laplacian.differentiate(u)
         d2u[0]  = 0.0   # Dirichlet BC: left boundary fixed
         d2u[-1] = 0.0   # Dirichlet BC: right boundary fixed
         return self.a * d2u

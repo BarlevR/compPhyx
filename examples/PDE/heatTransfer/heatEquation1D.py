@@ -33,8 +33,8 @@ print(logo.art)
 # --- Pick compPhyx solver: 'Euler', 'RK2', 'RK3', 'RK4', 'RK45' ---
 METHOD = 'RK45'
 
-# --- Pick spatial scheme: 'CentralD2' (2nd-order) or 'RichardsonD2' (4th-order) ---
-SPATIAL_SCHEME = 'CentralD2'
+# --- Pick spatial scheme: 'CentralLaplacian' (2nd-order) or 'RichardsonLaplacian' (4th-order) ---
+SPATIAL_SCHEME = 'CentralLaplacian'
 
 # --- Physical parameters ---
 thermal_diffusivity = 1.0   # thermal diffusivity (a)
